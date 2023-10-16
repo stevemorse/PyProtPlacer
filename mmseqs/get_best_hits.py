@@ -57,13 +57,13 @@ def make_count_output(count_out_file_name,loc_count_dict,superloc_count_dict,hit
     count_file = open(count_out_file_name, 'w')
     count_file.write("{:<30} {:<10}".format("location","count"))
     count_file.write("\n")
-    for loc, count in dict(sorted(loc_count_dict.items(),key=lambda item:item[1],reverse=True)):
+    for loc, count in sorted(loc_count_dict.items(),key=lambda item:item[1],reverse=True):
         count_file.write("{:<30} {:<10}".format(loc,count))
         count_file.write("\n")
     count_file.write("\n\n\n")
     count_file.write("{:<30} {:<10}".format("location","count"))
     count_file.write("\n")
-    for loc, count in dict(sorted(superloc_count_dict.items(),key=lambda item:item[1],reverse=True)):
+    for loc, count in sorted(superloc_count_dict.items(),key=lambda item:item[1],reverse=True):
         count_file.write("{:<30} {:<10}".format(loc,count))
         count_file.write("\n")
     count_file.write("\n\n\n")
@@ -109,7 +109,46 @@ def get_go_loc(location):
     'Bacterial flagellum basal body':'bacterial-type flagellum basal body','Bacterial flagellum':'bacterial-type flagellum assembly',\
     'Invadopodium':'plasma membrane','Host trans-Golgi network':'trans-Golgi network','Host apical cell membrane':'host cell membrane',\
     'Basal cell membrane':'cell membrane','Glyoxysome membrane':'glyoxysomal membrane','Uropodium':'uropod','Nuclear pore complex':'nuclear pore',\
-    }
+    'Forespore':'intracellular immature spore','intracellular immature spore':'intracellular immature spore','acrosome vesicle':'acrosomal vesicle',\
+    'Host cell inner membrane':'host cell membrane','Host endoplasmic reticulum membrane':'host cell endoplasmic reticulum membrane',\
+    'Apical lamina':'apical lamina of hyaline layer','Host membrane':'host cell membrane','Host Golgi apparatus membrane':'host cell Golgi membrane',\
+    'Inner membrane complex':'inner membrane pellicle complex','Parasitophorous vacuole lumen':'symbiont-containing vacuole',\
+    'Lysosome lumen':'lysosomal lumen','cell membrane':'plasma membrane','Bud':'budding cell bud growth','Peribacteroid space':'peribacteroid fluid',\
+    'Host perinuclear region':'host cell perinuclear region of cytoplasm','Host mitochondrion membrane':'host cell mitochondrial membrane',\
+    'Acrosome inner membrane':'inner acrosomal membrane','Peroxisome matrix':'peroxisomal matrix',\
+    'Host rough endoplasmic reticulum membrane':'host cell rough endoplasmic reticulum membrane','Host microsome membrane':'host cell cytoplasmic vesicle membrane',\
+    'Host plasmodesma':'host cell plasmodesma','Host nucleolus':'host cell nucleolus','Prevacuolar compartment membrane':'late endosome membrane',\
+    'Host mitochondrion':'host cell mitochondrion','Inner mitochondrial membrane':'host cell mitochondrion','Acrosome membrane':'acrosomal membrane',\
+    'COPII-coated vesicle membrane':'ER to Golgi transport vesicle membrane','Host endosome':'host cell endosome',\
+    'Host cytoplasmic vesicle':'host cell cytoplasmic vesicle','Host lipid droplet':'host cell lipid droplet',\
+    'Host cytoplasmic vesicle membrane':'host cell cytoplasmic vesicle membrane','Host filopodium':'host cell filopodium',\
+    'Host late endosome membrane':'host cell late endosome membrane','Golgi apparatus lumen':'Golgi lumen','Surface film':'cell surface',\
+    'Bud tip':'cellular bud tip','Vacuole lumen':'vacuole','Invadopodium':'plasma membrane','Spore core':'exosporium',\
+    'Acrosome outer membrane':'outer acrosomal membrane','Host chloroplast envelope':'chloroplast envelope','Golgi outpost':'postsynaptic Golgi apparatus',\
+    'Apicolateral cell membrane':'apicolateral plasma membrane','Host early endosome':'early endosome','Spore membrane':'exosporium',\
+    'Cellular thylakoid lumen':'thylakoid lumen','Forespore inner membrane':'intracellular immature spore','Spore coat':'spore wall',\
+    'Spore outer membrane':'outer endospore membrane','Zona pellucida':'egg coat','Extracellular vesicle membrane':'prominosome',\
+    'Host synapse':'host cell synapse','Host presynaptic cell membrane':'host cell presynaptic membrane','Host secretory vesicle':'secretory vesicle',\
+    'Host synaptic vesicle membrane':'host cell synaptic vesicle membrane','Prevacuolar compartment':'late endosome','Gem':'membrane raft',\
+    'Host nucleus membrane':'host cell nuclear membrane','Host nucleus matrix':'host cell nuclear matrix','Host nucleoplasm':'host cell nucleoplasm',\
+    'Host nucleus inner membrane':'host cell nuclear inner membrane','Secretory vesicle lumen':'clathrin-sculpted acetylcholine transport vesicle lumen',\
+    'Host endomembrane system':'host cell endomembrane system','Myelin membrane':'myelin sheath','Host cis-Golgi network':'cis-Golgi network',\
+    'Synaptic cell membrane':'synaptic membrane','Parasitophorous vacuole':'symbiont-containing vacuole',\
+    'Host mitochondrion outer membrane':'host cell mitochondrial outer membrane','Nucleus lamina':'nuclear lamina','Spore polar tube':'endospore',\
+    'Pseudopodium tip':'pseudopodium membrane','Tegument membrane':'host-symbiont bicellular tight junction',\
+    'Barrier septum':'division septum site selection','Acrosome lumen':'acrosomal lumen','Bud membrane':'cellular bud membrane',\
+    'Host rough endoplasmic reticulum':'host cell rough endoplasmic reticulum','COPII-coated vesicle':'COPII-coated ER to Golgi transport vesicle',\
+    'Target cell':'cellular_component','Target cell cytoplasm':'cytoplasm','Flagellar pocket':'ciliary pocket',\
+    'Host nucleus envelope':'host cell nuclear envelope','Host nucleus lamina':'host cell nuclear lamina','Host periplasm':'host cell periplasmic space',\
+    'Host vacuole':'vacuole','Host pathogen-containing vacuole':'pathogen-containing vacuole',\
+    'Host pathogen-containing vacuole membrane':'pathogen-containing vacuole membrane','Nucleus intermembrane space':'nuclear envelope lumen',\
+    'Cytoplasmic granule lumen':'cytolytic granule lumen','Host cis-Golgi network membrane':'cis-Golgi network membrane',\
+    'Host endoplasmic reticulum-Golgi intermediate compartment membrane':'endoplasmic reticulum-Golgi intermediate compartment',\
+    'Spore cortex':'endospore cortex','Host smooth endoplasmic reticulum membrane':'host cell smooth endoplasmic reticulum membrane',\
+    'Host':'host cellular component','Prospore':'intracellular immature spore','Mitosome matrix':'mitosome','Mitosome membrane':'mitosome',\
+    'Host phagosome':'phagocytic vesicle','Phagosome lumen':'early phagosome lumen','Nucleolus fibrillar center':'fibrillar center',\
+    'Forespore membrane':'prospore membrane','Mitochondrion envelope':'mitochondrial envelope',\
+    'Host cellular thylakoid membrane':'host thylakoid membrane','Host lysosome':'host cell lysosome'}
     if location in translation_dict:
         location = translation_dict.get(location) 
     return location
@@ -117,7 +156,8 @@ def get_go_loc(location):
 def is_keep_upper_case(location):
     keep_upper_case_list = ['P-body','Z disc','Golgi apparatus','Golgi cisterna membrane',\
                             'I band','M band','Flemming body','Golgi membrane','Cvt vesicle membrane',\
-                            'COPI-coated vesicle membrane','S-layer','PML body','Cajal body']
+                            'COPI-coated vesicle membrane','S-layer','PML body','Cajal body','Golgi stack',\
+                            'T-tubule','A band','H zone']
     return location in keep_upper_case_list
         
 def get_locations(in_file_name,graph,ns):
@@ -267,7 +307,7 @@ def main():
     #out_file_name = "/home/steve/Desktop/mmseq2/uniref50BestHits.txt"
     print("start ontology load")
     graph = obonet.read_obo("http://geneontology.org/ontology/go-basic.obo")
-    print(" ontology load")
+    print("ontology loaded")
     loc_dict = get_locations(parse_file_name,graph,ns)
     find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name)
     end_time = time.time()
