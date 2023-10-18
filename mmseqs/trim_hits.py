@@ -1,4 +1,5 @@
 import time
+import json
 
 def get_good_hits(in_file_name,out_file_name):
     outfile = open(out_file_name,'w')
@@ -28,11 +29,22 @@ def get_good_hits(in_file_name,out_file_name):
                 outfile.write("\n")
                 
 def main():
+    res_dict = json.load(open("res.json"))
     start_time = time.time()
+    sprot_in_file_name = res_dict.get('sprot_in_file_name')
+    #uniref50_in_file_name = res_dict.get('uniref50_in_file_name')
+    sprot_out_file_name = res_dict.get('sprot_out_file_name')
+    #uniref50_out_file_name = res_dict.get('uniref50_out_file_name')
+    in_file_name = sprot_in_file_name
+    out_file_name = sprot_out_file_name
+    
+    '''
     #in_file_name = "/home/steve/Desktop/mmseq2/sprotRes.tab"
     in_file_name = "/home/steve/Desktop/mmseq2/uniref50Res.tab"
     #out_file_name = "/home/steve/Desktop/mmseq2/sprotHits.txt"
     out_file_name = "/home/steve/Desktop/mmseq2/uniref50Hits.txt"
+    '''
+    
     get_good_hits(in_file_name,out_file_name)
     end_time = time.time()
     print("System terminates normally in: " + str(end_time - start_time) + "seconds\n")

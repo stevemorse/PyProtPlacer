@@ -1,4 +1,5 @@
 from lxml import etree
+import json
 import time
 '''
 <representativeMember>
@@ -38,7 +39,7 @@ def test(in_file_name,out_file_name,ns):
         if event != 'end':
             continue
         entries +=1
-        if entries < 51:
+        if entries < 1001:
             outfile.write(etree.tostring(element, encoding='unicode'))
             outfile.write("\n*********************************************\n")
             outfile.flush()
@@ -62,8 +63,13 @@ def test(in_file_name,out_file_name,ns):
 def main():
     start_time = time.time()
     ns = "{http://uniprot.org/uniref}"
+    res_dict = json.load(open("res.json"))
+    out_file_name = res_dict.get("test_out_file_name")
+    in_file_name = res_dict.get("test_in_file_name")
+    '''
     out_file_name = "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml"
     in_file_name = "/home/steve/Desktop/mmseq2/uniref50.xml"
+    '''
     test(in_file_name,out_file_name,ns)
     end_time = time.time()
     print("System terminates normally in: " + str(end_time - start_time) + "seconds\n")

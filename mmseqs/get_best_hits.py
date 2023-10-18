@@ -1,5 +1,6 @@
 from lxml import etree
 import time
+import json
 import networkx
 import obonet
 
@@ -148,7 +149,14 @@ def get_go_loc(location):
     'Host':'host cellular component','Prospore':'intracellular immature spore','Mitosome matrix':'mitosome','Mitosome membrane':'mitosome',\
     'Host phagosome':'phagocytic vesicle','Phagosome lumen':'early phagosome lumen','Nucleolus fibrillar center':'fibrillar center',\
     'Forespore membrane':'prospore membrane','Mitochondrion envelope':'mitochondrial envelope',\
-    'Host cellular thylakoid membrane':'host thylakoid membrane','Host lysosome':'host cell lysosome'}
+    'Host cellular thylakoid membrane':'host thylakoid membrane','Host lysosome':'host cell lysosome',\
+    'Forespore intermembrane space':'intracellular immature spore','acrosome vesicle':'acrosomal vesicle','cell membrane':'plasma membrane',\
+    'Host mitochondrion inner membrane':'host cell mitochondrial inner membrane','Invadopodium membrane':'plasma membrane',\
+    'endospore':'cellular anatomical entity','Endoplasmic reticulum-Golgi intermediate compartment lumen':'Endoplasmic reticulum-Golgi intermediate compartment',\
+    'Archaeal flagellum':'archaeal-type flagellum','Podosome membrane':'podosome','Paranodal septate junction':'paranodal junction',\
+    'Host trans-Golgi network membrane':'trans-Golgi network membrane','Host early endosome membrane':'early endosome membrane',\
+    'Hydrogenosome membrane':'hydrogenosomal membrane'}
+    
     if location in translation_dict:
         location = translation_dict.get(location) 
     return location
@@ -157,7 +165,9 @@ def is_keep_upper_case(location):
     keep_upper_case_list = ['P-body','Z disc','Golgi apparatus','Golgi cisterna membrane',\
                             'I band','M band','Flemming body','Golgi membrane','Cvt vesicle membrane',\
                             'COPI-coated vesicle membrane','S-layer','PML body','Cajal body','Golgi stack',\
-                            'T-tubule','A band','H zone']
+                            'T-tubule','A band','H zone','ER to Golgi transport vesicle membrane',\
+                            'Golgi lumen','COPII-coated ER to Golgi transport vesicle',\
+                            'COPI-coated vesicle']
     return location in keep_upper_case_list
         
 def get_locations(in_file_name,graph,ns):
@@ -185,7 +195,7 @@ def get_locations(in_file_name,graph,ns):
                             strip_name_space(subloc)
                             for location in subloc.findall(ns + 'location'):
                                 strip_name_space(location)
-                                loc = location.text
+                                loc = location.text.strip()
                                 if location.attrib.get('evidence') != None:
                                     ecode = location.attrib.get('evidence')
                                 else:
@@ -294,19 +304,23 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
     
 def main():
     start_time = time.time()
+    res_dict = json.load(open("res.json"))
     ns = "{http://uniprot.org/uniprot}"
     #ns = "{http://uniprot.org/uniref}"
-    parse_file_name = "/home/steve/Desktop/mmseq2/uniprot_sprot.xml"
-    #parse_file_name = "/home/steve/Desktop/mmseq2/uniref50.xml"
-    count_out_file_name = "/home/steve/Desktop/mmseq2/sprotCount.txt"
-    #count_out_file_name = "/home/steve/Desktop/mmseq2/uniref50Count.txt"
-    in_file_name = "/home/steve/Desktop/mmseq2/sprotHits.txt"
-    #in_file_name = "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml"
-    #in_file_name = "/home/steve/Desktop/mmseq2/uniref50Hits.txt"
-    out_file_name = "/home/steve/Desktop/mmseq2/sprotBestHits.txt"
-    #out_file_name = "/home/steve/Desktop/mmseq2/uniref50BestHits.txt"
+    
+    parse_file_name = res_dict.get("sprot_parse_file_name")
+    count_out_file_name = res_dict.get("sprot_count_out_file_name")
+    in_file_name = res_dict.get("sprot_in_file_name")
+    out_file_name = res_dict.get("sprot_out_file_name")
+    '''
+    parse_file_name = res_dict.get("uniref50_parse_file_name")
+    count_out_file_name = res_dict.get("uniref50_count_out_file_name")
+    in_file_name = res_dict.get("test_uniref50_in_file_name")
+    #in_file_name = res_dict.get("uniref50_in_file_name")
+    out_file_name = res_dict.get("uniref50_out_file_name")
+    '''
     print("start ontology load")
-    graph = obonet.read_obo("http://geneontology.org/ontology/go-basic.obo")
+    graph = obonet.read_obo(res_dict.get("ontology_to_load"))
     print("ontology loaded")
     loc_dict = get_locations(parse_file_name,graph,ns)
     find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name)

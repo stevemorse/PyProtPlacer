@@ -1,0 +1,15 @@
+{
+	"sprot_parse_file_name" : "/home/steve/Desktop/mmseq2/uniprot_sprot.xml",
+    "uniref50_parse_file_name" : "/home/steve/Desktop/mmseq2/uniref50.xml",
+    "sprot_count_out_file_name" : "/home/steve/Desktop/mmseq2/sprotCount.txt",
+    "uniref50_count_out_file_name" : "/home/steve/Desktop/mmseq2/uniref50Count.txt",
+    "sprot_in_file_name" : "/home/steve/Desktop/mmseq2/sprotHits.txt",
+    "test_uniref50_in_file_name" : "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml",
+    "uniref50_in_file_name" : "/home/steve/Desktop/mmseq2/uniref50Hits.txt",
+    "sprot_out_file_name" : "/home/steve/Desktop/mmseq2/sprotBestHits.txt",
+    "uniref50_out_file_name" : "/home/steve/Desktop/mmseq2/uniref50BestHits.txt",
+    "ontology_to_load" : "http://geneontology.org/ontology/go-basic.obo",
+    "trans_dict_file_name" : "/home/steve/Desktop/mmseq2/trans_dict.txt",
+    "test_out_file_name" : "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml",
+    "test_in_file_name" : "/home/steve/Desktop/mmseq2/uniref50.xml"
+}

@@ -1,5 +1,6 @@
-
 import time
+import json
+
 def main():
     translation_dict = {'Cell membrane':'plasma membrane','Virion':'virion component','Secreted':'no location class',\
     'Nucleus speckle':'nucleus','Mitochondrion matrix':'mitochondrion','Golgi apparatus membrane':'Golgi membrane',\
@@ -78,13 +79,22 @@ def main():
     'Host':'host cellular component','Prospore':'intracellular immature spore','Mitosome matrix':'mitosome','Mitosome membrane':'mitosome',\
     'Host phagosome':'phagocytic vesicle','Phagosome lumen':'early phagosome lumen','Nucleolus fibrillar center':'fibrillar center',\
     'Forespore membrane':'prospore membrane','Mitochondrion envelope':'mitochondrial envelope',\
-    'Host cellular thylakoid membrane':'host thylakoid membrane','Host lysosome':'host cell lysosome'}
+    'Host cellular thylakoid membrane':'host thylakoid membrane','Host lysosome':'host cell lysosome',\
+    'Forespore intermembrane space':'intracellular immature spore','acrosome vesicle':'acrosomal vesicle','cell membrane':'plasma membrane',\
+    'Host mitochondrion inner membrane':'host cell mitochondrial inner membrane','Invadopodium membrane':'plasma membrane',\
+    'endospore':'cellular anatomical entity','Endoplasmic reticulum-Golgi intermediate compartment lumen':'Endoplasmic reticulum-Golgi intermediate compartment',\
+    'Archaeal flagellum':'archaeal-type flagellum','Podosome membrane':'podosome','Paranodal septate junction':'paranodal junction',\
+    'Host trans-Golgi network membrane':'trans-Golgi network membrane','Host early endosome membrane':'early endosome membrane',\
+    'Hydrogenosome membrane':'hydrogenosomal membrane',}
     
     start_time = time.time()
-    count_file = open("/home/steve/Desktop/mmseq2/trans_dict.txt", 'w')
-    count_file.write("{:<30} {:<10}".format("swiss prot location name","go term"))
-    for swiss_prot,go_term in translation_dict:
-            count_file.write("{:<30} {:<10}".format(swiss_prot,go_term))
+    res_dict = json.load(open("res.json"))
+    count_file = open(res_dict.get('trans_dict_file_name'), 'w')
+    count_file.write("{:<70} {:<70}".format("swiss prot location name","go term"))
+    count_file.write("\n")
+    for swiss_prot,go_term in translation_dict.items():
+            count_file.write("{:<70} {:<70}".format(swiss_prot,go_term))
+            count_file.write("\n")
     end_time = time.time()
     print("System terminates normally in: " + str(end_time - start_time) + "seconds\n")
     
