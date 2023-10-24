@@ -64,7 +64,7 @@ def main():
     start_time = time.time()
     ns = "{http://uniprot.org/uniref}"
     res_dict = json.load(open("res.json"))
-    out_file_name = res_dict.get("test_out_file_name")
+    out_file_name = res_dict.get("test_in_out_file_name")
     in_file_name = res_dict.get("test_in_file_name")
     '''
     out_file_name = "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml"

@@ -305,9 +305,9 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
 def main():
     start_time = time.time()
     res_dict = json.load(open("res.json"))
-    ns = "{http://uniprot.org/uniprot}"
-    #ns = "{http://uniprot.org/uniref}"
-    
+    #ns = "{http://uniprot.org/uniprot}"
+    ns = "{http://uniprot.org/uniref}"
+    '''
     parse_file_name = res_dict.get("sprot_parse_file_name")
     count_out_file_name = res_dict.get("sprot_count_out_file_name")
     in_file_name = res_dict.get("sprot_in_file_name")
@@ -315,10 +315,10 @@ def main():
     '''
     parse_file_name = res_dict.get("uniref50_parse_file_name")
     count_out_file_name = res_dict.get("uniref50_count_out_file_name")
-    in_file_name = res_dict.get("test_uniref50_in_file_name")
+    in_file_name = res_dict.get("test_in_out_file_name")
     #in_file_name = res_dict.get("uniref50_in_file_name")
     out_file_name = res_dict.get("uniref50_out_file_name")
-    '''
+    
     print("start ontology load")
     graph = obonet.read_obo(res_dict.get("ontology_to_load"))
     print("ontology loaded")

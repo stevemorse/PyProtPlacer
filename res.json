@@ -10,6 +10,6 @@
     "uniref50_out_file_name" : "/home/steve/Desktop/mmseq2/uniref50BestHits.txt",
     "ontology_to_load" : "http://geneontology.org/ontology/go-basic.obo",
     "trans_dict_file_name" : "/home/steve/Desktop/mmseq2/trans_dict.txt",
-    "test_out_file_name" : "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml",
+    "test_in_out_file_name" : "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml",
     "test_in_file_name" : "/home/steve/Desktop/mmseq2/uniref50.xml"
 }
