@@ -15,12 +15,16 @@ def strip_name_space(element):
             newat = at.split('}', 1)[1]
             element.attrib[newat] = element.attrib[at]
             del element.attrib[at]
-
+'''
 def get_loc(go_code,graph):
     # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
     id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
-    return id_to_name[go_code]
-
+    obsolete_list = ["GO:0016580"]
+    name = "no location"
+    if go_code not in obsolete_list:
+        name = id_to_name[go_code]
+    return name
+'''
 def get_super_locations(go_code,graph):
     # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
     id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
@@ -204,23 +208,25 @@ def get_locations(in_file_name,graph,ns):
                                 clean_loc = get_go_loc(loc)
                                 print('clean_loc: ' + clean_loc)
                                 #code to recover bad swiss prot names
-                                try:
-                                    if is_keep_upper_case(clean_loc):
-                                        go_code = name_to_id[clean_loc]
-                                    else:
-                                        go_code = name_to_id[clean_loc[0].lower() + clean_loc[1:]]
-                                except KeyError:
-                                    if clean_loc not in key_error_list:
+                                if clean_loc not in key_error_list:
+                                    try:
+                                        if is_keep_upper_case(clean_loc):
+                                            go_code = name_to_id[clean_loc]
+                                        else:
+                                            go_code = name_to_id[clean_loc[0].lower() + clean_loc[1:]]
+                                    except KeyError:
                                         key_error_list.append(clean_loc)
                                         print("key error on: " + clean_loc + " ***********number of bad names now: " + str(len(key_error_list)))
                                         print("\n")
                                         key_error_log_file.write("key error on: " + clean_loc + " bad names now: " + str(len(key_error_list)))
                                         key_error_log_file.write("\n")
                                         key_error_log_file.flush()
-                                super_class = get_location_class(go_code,graph)
-                                loc_dict.update({acc:(loc,super_class,ecode)})
-                                print(str(len(loc_dict)) + "\t",acc + " : ",loc + "\t",super_class + "\t",ecode + "\n")
+                                    super_class = get_location_class(go_code,graph)
+                                    loc_dict.update({acc:(loc,super_class,ecode)})
+                                    print(str(len(loc_dict)) + "\t",acc + " : ",loc + "\t",super_class + "\t",ecode + "\n")
             elif ns == "{http://uniprot.org/uniref}":
+                # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
+                id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
                 #find accession for uniref50
                 for member in element.findall(ns + 'representativeMember'):
                     #print(etree.tostring(member, encoding='unicode'))
@@ -239,9 +245,19 @@ def get_locations(in_file_name,graph,ns):
                         if properties.attrib.get('type') == 'GO Cellular Component':
                             #print(etree.tostring(properties, encoding='unicode'))
                             go_code = properties.attrib.get('value')
-                            loc = get_loc(go_code,graph)
-                            super_class = get_location_class(go_code,graph)
-                            print(acc + " : " + go_code + " : " + loc + " : " + super_class)
+                            loc = "no location"
+                            super_class = "no location class"
+                            if go_code not in key_error_list:
+                                try:
+                                    loc = id_to_name[go_code]
+                                except KeyError:
+                                    key_error_list.append(go_code)
+                                    key_error_log_file.write("key error on: " + go_code + " bad codes now: " + str(len(key_error_list)))
+                                    key_error_log_file.write("\n")
+                                    key_error_log_file.flush()
+                            if loc != "no location":
+                                super_class = get_location_class(go_code,graph)
+                            print(acc + " : " + go_code + " : " + " : " + loc + " : " + super_class)
                             loc_dict.update({acc:(loc,super_class,go_code)})                
             else:
                 print("error...schema not supported")
@@ -256,8 +272,8 @@ def get_locations(in_file_name,graph,ns):
                 del ancestor.getparent()[0]
     del context
     key_error_log_file.close()
-    for x in key_error_list:
-        print("failed key: " + x)           
+    for key in key_error_list:
+        print("failed key: " + key)           
     return loc_dict
 
 def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):  
@@ -313,10 +329,10 @@ def main():
     in_file_name = res_dict.get("sprot_in_file_name")
     out_file_name = res_dict.get("sprot_out_file_name")
     '''
-    parse_file_name = res_dict.get("uniref50_parse_file_name")
+    #parse_file_name = res_dict.get("uniref50_parse_file_name")
+    parse_file_name = res_dict.get("test_uniref50_parse_file_name")
     count_out_file_name = res_dict.get("uniref50_count_out_file_name")
-    in_file_name = res_dict.get("test_in_out_file_name")
-    #in_file_name = res_dict.get("uniref50_in_file_name")
+    in_file_name = res_dict.get("uniref50_in_file_name")
     out_file_name = res_dict.get("uniref50_out_file_name")
     
     print("start ontology load")

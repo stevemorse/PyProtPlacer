@@ -32,6 +32,10 @@ def strip_name_space(element):
 def test(in_file_name,out_file_name,ns):
     entries = 0
     outfile = open(out_file_name,'w')
+    outfile.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>")
+    outfile.write("\n")
+    outfile.write("<entries>")
+    outfile.write("\n")
     context = etree.iterparse(in_file_name, tag = ns + 'entry', events = ('start', 'end'))
     #context = etree.iterparse(in_file_name, events = ('start', 'end')) 
     for event, element in context:
@@ -41,7 +45,7 @@ def test(in_file_name,out_file_name,ns):
         entries +=1
         if entries < 1001:
             outfile.write(etree.tostring(element, encoding='unicode'))
-            outfile.write("\n*********************************************\n")
+            #outfile.write("\n")
             outfile.flush()
         else:
             break
@@ -55,7 +59,7 @@ def test(in_file_name,out_file_name,ns):
             while ancestor.getprevious() is not None:
                 del ancestor.getparent()[0]
     del context              
-
+    outfile.write("</entries>")
 
 
 
@@ -64,8 +68,8 @@ def main():
     start_time = time.time()
     ns = "{http://uniprot.org/uniref}"
     res_dict = json.load(open("res.json"))
-    out_file_name = res_dict.get("test_in_out_file_name")
-    in_file_name = res_dict.get("test_in_file_name")
+    out_file_name = res_dict.get("test_uniref50_parse_file_name")
+    in_file_name = res_dict.get("uniref50_parse_file_name")
     '''
     out_file_name = "/home/steve/Desktop/mmseq2/sliceOfUniref50.xml"
     in_file_name = "/home/steve/Desktop/mmseq2/uniref50.xml"
