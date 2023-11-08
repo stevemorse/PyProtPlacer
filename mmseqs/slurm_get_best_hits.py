@@ -3,9 +3,17 @@ import time
 import json
 import networkx
 import obonet
-import concurrent.futures
+from concurrent import futures
+import queue
 from threading import Lock
 import os
+
+class ThreadPoolExecutorWithQueueSizeLimit(futures.ThreadPoolExecutor):
+    # class code from:
+    # https://stackoverflow.com/questions/48263704/threadpoolexecutor-how-to-limit-the-queue-maxsize
+    def __init__(self, maxsize=50, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._work_queue = queue.Queue(maxsize=maxsize)
 
 def count_files(dir_path):
     # code based on: https://pynative.com/python-count-number-of-files-in-a-directory/
@@ -357,11 +365,14 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
     del context
     key_error_log_file.close()
     for key in key_error_list:
-        print("failed key: " + key)           
-        
+        print("failed key: " + key)  
+            
+    print("local_dict size: " + len(local_dict)) 
     with lock:
         loc_dict |= local_dict
-
+    print("loc_dict size: " + len(loc_dict))
+    print("processed file: " + in_file_name) 
+    
 def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):  
     line_number = 0
     last_query = "none"
@@ -426,13 +437,17 @@ def main():
     print("ontology loaded")
     dir_path = res_dict.get("uniref50_base_file_name")
     lock = Lock()
+    #global loc_dict
     loc_dict = {}
     total_files = count_files(dir_path)
     base_file_name = res_dict.get("uniref50_base_file_name")
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    #with ThreadPoolExecutorWithQueueSizeLimit() as executor:
+    with futures.ThreadPoolExecutor() as executor:
         for file_count in range(total_files):
             parse_file_name =  base_file_name + "/slice_" + str(file_count) + ".xml"
             executor.submit(get_locations,parse_file_name,graph,ns,loc_dict,lock)
+            
+    print("loc_dict:\n" + loc_dict)
     find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name)
     end_time = time.time()
     print("System terminates normally in: " + str(end_time - start_time) + "seconds\n")

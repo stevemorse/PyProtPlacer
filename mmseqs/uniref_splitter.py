@@ -45,8 +45,8 @@ def slice_file(in_file_name,out_file_base_name,ns):
             #close old file, make new file, reset entries and increment file file_count
             entries = 0
             make_file_footer(outfile)
-            file_count += 1
             print("new file: " + str(file_count))
+            file_count += 1
             out_file_name = out_file_base_name + "/slice_" + str(file_count) + ".xml"
             outfile = open(out_file_name,'w')
             make_file_header(outfile)
