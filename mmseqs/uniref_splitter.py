@@ -47,7 +47,7 @@ def slice_file(in_file_name,out_file_base_name,ns):
             make_file_footer(outfile)
             file_count += 1
             print("new file: " + str(file_count))
-            out_file_name = out_file_base_name + "_" + str(file_count) + ".xml"
+            out_file_name = out_file_base_name + "/slice_" + str(file_count) + ".xml"
             outfile = open(out_file_name,'w')
             make_file_header(outfile)
         # manual garbage collection
