@@ -15,7 +15,8 @@ def count_files(dir_path):
         # check if current path is a file
         if os.path.isfile(os.path.join(dir_path, path)):
             count += 1
-    print('File count:', count) 
+    print('File count:', count)
+    return count
     
 def strip_name_space(element):
     # namespace stripping code from:
@@ -28,16 +29,7 @@ def strip_name_space(element):
             newat = at.split('}', 1)[1]
             element.attrib[newat] = element.attrib[at]
             del element.attrib[at]
-'''
-def get_loc(go_code,graph):
-    # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
-    id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
-    obsolete_list = ["GO:0016580"]
-    name = "no location"
-    if go_code not in obsolete_list:
-        name = id_to_name[go_code]
-    return name
-'''
+
 def get_super_locations(go_code,graph):
     # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
     id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
@@ -277,7 +269,7 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
         if event != 'end':
             continue
         strip_name_space(element)
-        print(event,element.tag)
+        #print(event,element.tag)
         if element.tag == 'entry':
             #find accession for swiss prot
             if ns == "{http://uniprot.org/uniprot}":
@@ -296,7 +288,7 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
                                     ecode = location.attrib.get('evidence')
                                 else:
                                     ecode = "no ecode"
-                                print('loc: ' + loc)
+                                #print('loc: ' + loc)
                                 clean_loc = get_go_loc(loc)
                                 print('clean_loc: ' + clean_loc)
                                 #code to recover bad swiss prot names
@@ -437,7 +429,7 @@ def main():
     loc_dict = {}
     total_files = count_files(dir_path)
     base_file_name = res_dict.get("uniref50_base_file_name")
-    with concurrent.futures.ThreadPoolExecutor as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         for file_count in range(total_files):
             parse_file_name =  base_file_name + "/slice_" + str(file_count) + ".xml"
             executor.submit(get_locations,parse_file_name,graph,ns,loc_dict,lock)
