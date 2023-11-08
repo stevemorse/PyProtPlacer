@@ -366,8 +366,9 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
     key_error_log_file.close()
     for key in key_error_list:
         print("failed key: " + key)           
-        with lock:
-            loc_dict |= local_dict
+        
+    with lock:
+        loc_dict |= local_dict
 
 def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):  
     line_number = 0
