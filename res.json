@@ -9,5 +9,6 @@
     "sprot_out_file_name" : "/home/steve/Desktop/mmseq2/sprotBestHits.txt",
     "uniref50_out_file_name" : "/home/steve/Desktop/mmseq2/uniref50BestHits.txt",
     "ontology_to_load" : "http://geneontology.org/ontology/go-basic.obo",
-    "trans_dict_file_name" : "/home/steve/Desktop/mmseq2/trans_dict.txt"
+    "trans_dict_file_name" : "/home/steve/Desktop/mmseq2/trans_dict.txt",
+    "uniref50_base_file_name" : "/home/steve/Desktop/mmseq2/slices/slice"
 }

@@ -33,22 +33,101 @@ def get_super_locations(go_code,graph):
 def get_location_class(go_code,graph):
     # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
     id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
-    #name_to_id = {data['name']: id_ for id_, data in graph.nodes(data=True) if 'name' in data}
-    #list_of_loc_classes = ["chloroplast","endoplasmic reticulum",\
-    #                      "mitochondrion","nucleus","peroxisome"]
-    list_of_loc_classes = ["GO:0009507","GO:0005783","GO:0005739","GO:0005634","GO:0005777"]
-    if go_code in list_of_loc_classes:
-        loc_name = id_to_name[go_code]
-    else:
-        for superclass in list_of_loc_classes:
-            loc_code = superclass
-            print(loc_code)
-            loc_name = id_to_name[loc_code]
-            print(loc_name)
-            if loc_name not in get_super_locations(go_code,graph):
-                loc_name = "no location class"
-    return loc_name
+    # chloroplast:"GO:0009507"
+    #    host cell chloroplast:"GO:0033652"
+    # mitochondrion:"GO:0005739"
+    #    host cell mitochondrion:"GO:0033650"
+    #    host cell mitochondrial envelope:"GO:0044190"
+    #    host cell mitochondrial membrane:"GO:0044191"
+    #    host cell mitochondrial intermembrane space:"GO:0072492"
+    #    mitochondrial chromosome:"GO:0000262"
+    # endoplasmic reticulum:"GO:0005783"
+    #    host cell endoplasmic reticulum:"GO:0044165"
+    #    host cell endoplasmic reticulum lumen:"GO:0044166"
+    # peroxisome:"GO:0005777","GO:0019818"
+    #    host cell peroxisome:"GO:0120149"
+    # nucleus:"GO:0005634"
+    #    nuclear envelope:"GO:0005635","GO:0005636"
+    #    nuclear outer membrane:"GO:0005640"
+    #    nuclear outer membrane-endoplasmic reticulum membrane network:"GO:0042175"
+    #    host cell nucleus:"GO:0042025","GO:0033649"
+    #    host chromosome:"GO:0044383"
+    #    nuclear lumen:"GO:0031981"
+    #    nuclear chromosome:"GO:0000228"
+    # secretory pathway elements not including ER components
+    #    Golgi apparatus:"GO:0005794"
+    #    secretory vesicle:"GO:0099503"
+    #    transport vesicle:"GO:0030133"
+    #    secretory granule:"GO:0030141"
+    #    COPI-coated vesicle:"GO:0030137"
+    #    COPII-coated ER to Golgi transport vesicle:"GO:0030134","GO:0030138","GO:0140045"
+    #    host cell Golgi apparatus:"GO:0044177"
+    #    postsynaptic Golgi apparatus:"GO:0150051" ?
+    #    Golgi-associated vesicle:"GO:0005798"
+    #    endocytic vesicle:"GO:0030139" ?
+    #    GARP complex:"GO:0000938" ?
+    #    host cell cytoplasmic vesicle:"GO:0044161" ?
+    chloroplast_list = ["GO:0009507","GO:0033652"]
+    mitochondrion_list = ["GO:0005739","GO:0033650","GO:0044190","GO:0044191","GO:0072492","GO:0000262"]
+    endoplasmic_reticulum_list = ["GO:0005783","GO:0044165","GO:0044166"]
+    peroxisome_list = ["GO:0005777","GO:0019818","GO:0120149"]
+    nucleus_list = ["GO:0005634","GO:0005635","GO:0005636","GO:0005640","GO:0042175","GO:0042025","GO:0033649","GO:0044383",\
+                    "GO:0031981","GO:0000228"]
+    secretory_pathway_list = ["GO:0005794","GO:0099503","GO:0030133","GO:0030141","GO:0030137","GO:0030134","GO:0030138",\
+                              "GO:0140045","GO:0044177","GO:0150051","GO:0005798","GO:0030139","GO:0000938","GO:0044161"]
+    
+    loc_name = "no location class"
+    
+    if go_code in chloroplast_list:
+        loc_name = "chloroplast"
+    super_list = get_super_locations(go_code,graph)
+    for code in chloroplast_list:
+        if id_to_name[code] in super_list:
+            loc_name = "chloroplast"
+            break
+    
+    if go_code in mitochondrion_list:
+        loc_name = "mitochondrion"
+    super_list = get_super_locations(go_code,graph)
+    for code in mitochondrion_list:
+        if id_to_name[code] in super_list:
+            loc_name = "mitochondrion"
+            break
         
+    if go_code in endoplasmic_reticulum_list:
+        loc_name = "endoplasmic reticulum"
+    super_list = get_super_locations(go_code,graph)
+    for code in endoplasmic_reticulum_list:
+        if id_to_name[code] in super_list:
+            loc_name = "endoplasmic reticulum"
+            break
+        
+    if go_code in peroxisome_list:
+        loc_name = "peroxisome"
+    super_list = get_super_locations(go_code,graph)
+    for code in peroxisome_list:
+        if id_to_name[code] in super_list:
+            loc_name = "peroxisome"
+            break
+        
+    if go_code in nucleus_list:
+        loc_name = "nucleus"
+    super_list = get_super_locations(go_code,graph)
+    for code in nucleus_list:
+        if id_to_name[code] in super_list:
+            loc_name = "nucleus"
+            break
+        
+    if go_code in secretory_pathway_list:
+        loc_name = "secretory pathway"
+    for code in secretory_pathway_list:
+        super_list = get_super_locations(go_code,graph)
+        if id_to_name[code] in super_list:
+            loc_name = "secretory pathway"
+            break
+        
+    return loc_name 
+  
 def process_loc_hit(loc,loc_count_dict):
     if loc in loc_count_dict:
         current_count = loc_count_dict.get(loc)
