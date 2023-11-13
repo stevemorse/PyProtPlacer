@@ -5,7 +5,7 @@ import networkx
 import obonet
 from concurrent import futures
 import queue
-from threading import Lock
+#from threading import Lock
 import os
 
 class ThreadPoolExecutorWithQueueSizeLimit(futures.ThreadPoolExecutor):
@@ -83,62 +83,95 @@ def get_location_class(go_code,graph):
     chloroplast_list = ["GO:0009507","GO:0033652"]
     mitochondrion_list = ["GO:0005739","GO:0033650","GO:0044190","GO:0044191","GO:0072492","GO:0000262"]
     endoplasmic_reticulum_list = ["GO:0005783","GO:0044165","GO:0044166"]
-    peroxisome_list = ["GO:0005777","GO:0019818","GO:0120149"]
-    nucleus_list = ["GO:0005634","GO:0005635","GO:0005636","GO:0005640","GO:0042175","GO:0042025","GO:0033649","GO:0044383",\
-                    "GO:0031981","GO:0000228"]
-    secretory_pathway_list = ["GO:0005794","GO:0099503","GO:0030133","GO:0030141","GO:0030137","GO:0030134","GO:0030138",\
-                              "GO:0140045","GO:0044177","GO:0150051","GO:0005798","GO:0030139","GO:0000938","GO:0044161"]
+    peroxisome_list = ["GO:0005777","GO:0120149","GO:0019818"] #invalid go code : "GO:0019818" is other id for "peroxisome", raises KeyError
+    nucleus_list = ["GO:0005634","GO:0005635", "GO:0005636","GO:0005640","GO:0042175","GO:0042025","GO:0044383","GO:0000228","GO:0031981"]
+    # invalid go codes : "GO:0005635", "GO:0005636", both are "nuclear envelope" "GO:0033649" is "host cell nucleus", 
+    # "GO:0031981", is "nuclear lumen" all raise KeyError
+    secretory_pathway_list = ["GO:0005794","GO:0099503","GO:0030133","GO:0030138", "GO:0140045","GO:0030141","GO:0030137","GO:0030134",\
+                              "GO:0044177","GO:0150051","GO:0005798","GO:0030139","GO:0000938","GO:0044161"]
+    # invalid go codes : "GO:0030138", "GO:0140045", both other id for "COPII-coated ER to Golgi transport vesicle" all raise KeyError
     
+    KeyError_list = ["GO:0019818","GO:0005635","GO:0005636","GO:0033649","GO:0031981","GO:0030138", "GO:0140045"]
     loc_name = "no location class"
+    found = False
     
     if go_code in chloroplast_list:
         loc_name = "chloroplast"
-    super_list = get_super_locations(go_code,graph)
-    for code in chloroplast_list:
-        if id_to_name[code] in super_list:
-            loc_name = "chloroplast"
-            break
-    
-    if go_code in mitochondrion_list:
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in chloroplast_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "chloroplast"
+                        found = True
+                        break
+                
+    if go_code in mitochondrion_list and not found:
         loc_name = "mitochondrion"
-    super_list = get_super_locations(go_code,graph)
-    for code in mitochondrion_list:
-        if id_to_name[code] in super_list:
-            loc_name = "mitochondrion"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in mitochondrion_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "mitochondrion"
+                        found = True
+                        break
         
-    if go_code in endoplasmic_reticulum_list:
+    if go_code in endoplasmic_reticulum_list and not found:
         loc_name = "endoplasmic reticulum"
-    super_list = get_super_locations(go_code,graph)
-    for code in endoplasmic_reticulum_list:
-        if id_to_name[code] in super_list:
-            loc_name = "endoplasmic reticulum"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in endoplasmic_reticulum_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "endoplasmic reticulum"
+                        found = True
+                        break
         
-    if go_code in peroxisome_list:
+    if go_code in peroxisome_list and not found:
         loc_name = "peroxisome"
-    super_list = get_super_locations(go_code,graph)
-    for code in peroxisome_list:
-        if id_to_name[code] in super_list:
-            loc_name = "peroxisome"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in peroxisome_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "peroxisome"
+                        found = True
+                        break
         
-    if go_code in nucleus_list:
+    if go_code in nucleus_list and not found:
         loc_name = "nucleus"
-    super_list = get_super_locations(go_code,graph)
-    for code in nucleus_list:
-        if id_to_name[code] in super_list:
-            loc_name = "nucleus"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in nucleus_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "nucleus"
+                        found = True
+                        break
         
-    if go_code in secretory_pathway_list:
+    if go_code in secretory_pathway_list and not found:
         loc_name = "secretory pathway"
-    for code in secretory_pathway_list:
-        super_list = get_super_locations(go_code,graph)
-        if id_to_name[code] in super_list:
-            loc_name = "secretory pathway"
-            break
-        
+        found = True
+    else:
+        if not found:
+            for code in secretory_pathway_list:
+                if code not in KeyError_list:
+                    super_list = get_super_locations(go_code,graph)
+                    if id_to_name[code] in super_list:
+                        loc_name = "secretory pathway"
+                        found = True
+                        break
     return loc_name 
   
 def process_loc_hit(loc,loc_count_dict):
@@ -266,10 +299,14 @@ def is_keep_upper_case(location):
                             'COPI-coated vesicle']
     return location in keep_upper_case_list
         
-def get_locations(in_file_name,graph,ns,loc_dict,lock):
-    key_error_log_file = open("/home/steve/Desktop/mmseq2/keyErrorLog.txt", 'w')
+def get_locations(in_file_name,graph,ns):
+    #,loc_dict,lockremoved as params
+    print("file: " + in_file_name + " begins in get_locations")
+    key_error_log_file = open("/home/steve/Desktop/mmseq2/keyErrorLog.txt", 'a')
+    key_error_log_file.write("\n")
     key_error_list = []
     local_dict = {}
+    # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
     name_to_id = {data['name']: id_ for id_, data in graph.nodes(data=True) if 'name' in data}
     context = etree.iterparse(in_file_name, tag = ns + 'entry', events = ('start', 'end'))
     for event, element in context:
@@ -315,7 +352,7 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
                                         key_error_log_file.flush()
                                     super_class = get_location_class(go_code,graph)
                                     local_dict.update({acc:(loc,super_class,ecode)})
-                                    print(str(len(loc_dict)) + "\t",acc + " : ",loc + "\t",super_class + "\t",ecode + "\n")
+                                    print(str(len(local_dict)) + "\t",acc + " : ",loc + "\t",super_class + "\t",ecode + "\n")
             elif ns == "{http://uniprot.org/uniref}":
                 # code from: https://notebook.community/dhimmel/obo/examples/go-obonet
                 id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
@@ -337,6 +374,7 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
                         if properties.attrib.get('type') == 'GO Cellular Component':
                             #print(etree.tostring(properties, encoding='unicode'))
                             go_code = properties.attrib.get('value')
+                            go_code.strip()
                             loc = "no location"
                             super_class = "no location class"
                             if go_code not in key_error_list:
@@ -347,10 +385,11 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
                                     key_error_log_file.write("key error on: " + go_code + " bad codes now: " + str(len(key_error_list)))
                                     key_error_log_file.write("\n")
                                     key_error_log_file.flush()
-                            if loc != "no location":
+                            if loc != "no location" and go_code not in key_error_list:
                                 super_class = get_location_class(go_code,graph)
                             print(acc + " : " + go_code + " : " + " : " + loc + " : " + super_class)
-                            local_dict.update({acc:(loc,super_class,go_code)})                
+                            local_dict.update({acc:(loc,super_class,go_code)})    
+                            print("local_dict size: " + str(len(local_dict)), flush = True)            
             else:
                 print("error...schema not supported")
         # manual garbage collection
@@ -365,14 +404,18 @@ def get_locations(in_file_name,graph,ns,loc_dict,lock):
     del context
     key_error_log_file.close()
     for key in key_error_list:
-        print("failed key: " + key)  
-            
-    print("local_dict size: " + len(local_dict)) 
+        print("failed key: " + key) 
+    '''         
+    print("local_dict size at end: " + len(local_dict), flush = True)
     with lock:
-        loc_dict |= local_dict
-    print("loc_dict size: " + len(loc_dict))
+        print("lock aquired with lock id: " + id(lock))
+        #loc_dict |= local_dict
+        loc_dict.update(local_dict)
+    print("loc_dict size at end: " + len(loc_dict))
     print("processed file: " + in_file_name) 
-    
+    '''
+    return local_dict
+
 def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):  
     line_number = 0
     last_query = "none"
@@ -426,7 +469,7 @@ def main():
     in_file_name = res_dict.get("sprot_in_file_name")
     out_file_name = res_dict.get("sprot_out_file_name")
     '''
-    parse_file_name = res_dict.get("uniref50_parse_file_name")
+    #parse_file_name = res_dict.get("uniref50_parse_file_name")
     #parse_file_name = res_dict.get("test_uniref50_parse_file_name")
     count_out_file_name = res_dict.get("uniref50_count_out_file_name")
     in_file_name = res_dict.get("uniref50_in_file_name")
@@ -436,18 +479,22 @@ def main():
     graph = obonet.read_obo(res_dict.get("ontology_to_load"))
     print("ontology loaded")
     dir_path = res_dict.get("uniref50_base_file_name")
-    lock = Lock()
+    #lock = Lock()
     #global loc_dict
     loc_dict = {}
     total_files = count_files(dir_path)
     base_file_name = res_dict.get("uniref50_base_file_name")
     #with ThreadPoolExecutorWithQueueSizeLimit() as executor:
-    with futures.ThreadPoolExecutor() as executor:
-        for file_count in range(total_files):
-            parse_file_name =  base_file_name + "/slice_" + str(file_count) + ".xml"
-            executor.submit(get_locations,parse_file_name,graph,ns,loc_dict,lock)
-            
-    print("loc_dict:\n" + loc_dict)
+    #with futures.ThreadPoolExecutor() as executor:
+    with futures.ProcessPoolExecutor() as executor:
+    #parse_file_name =  base_file_name + "/slice_" + str(file_count) + ".xml"                                                                                                             #file_count in range(total_files)
+        results =  [executor.submit(get_locations,base_file_name + "/slice_" + str(file_count) + ".xml",graph,ns) for file_count in range(total_files)]
+        #print("future: " + str(file_count) + " created")
+        for results in futures.as_completed(results):
+            result = results.result()
+            loc_dict.update(result)
+            print("loc_dict size: " + str(len(loc_dict)), flush = True) 
+    print("loc_dict size: " + str(len(loc_dict)), flush = True)
     find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name)
     end_time = time.time()
     print("System terminates normally in: " + str(end_time - start_time) + "seconds\n")

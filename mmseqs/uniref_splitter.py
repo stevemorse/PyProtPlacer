@@ -37,7 +37,7 @@ def slice_file(in_file_name,out_file_base_name,ns):
         strip_name_space(element)
         if event != 'end':
             continue
-        if entries < 1000:
+        if entries < 100000:
             entries +=1
             outfile.write(etree.tostring(element, encoding='unicode'))
             outfile.flush()
@@ -46,10 +46,10 @@ def slice_file(in_file_name,out_file_base_name,ns):
             entries = 0
             make_file_footer(outfile)
             print("new file: " + str(file_count))
-            file_count += 1
             out_file_name = out_file_base_name + "/slice_" + str(file_count) + ".xml"
             outfile = open(out_file_name,'w')
             make_file_header(outfile)
+            file_count += 1
         # manual garbage collection
         # memory cleaning code from:
         # https://stackoverflow.com/questions/12160418/
