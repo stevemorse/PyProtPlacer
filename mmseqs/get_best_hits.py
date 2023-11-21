@@ -70,62 +70,95 @@ def get_location_class(go_code,graph):
     chloroplast_list = ["GO:0009507","GO:0033652"]
     mitochondrion_list = ["GO:0005739","GO:0033650","GO:0044190","GO:0044191","GO:0072492","GO:0000262"]
     endoplasmic_reticulum_list = ["GO:0005783","GO:0044165","GO:0044166"]
-    peroxisome_list = ["GO:0005777","GO:0019818","GO:0120149"]
-    nucleus_list = ["GO:0005634","GO:0005635","GO:0005636","GO:0005640","GO:0042175","GO:0042025","GO:0033649","GO:0044383",\
-                    "GO:0031981","GO:0000228"]
-    secretory_pathway_list = ["GO:0005794","GO:0099503","GO:0030133","GO:0030141","GO:0030137","GO:0030134","GO:0030138",\
-                              "GO:0140045","GO:0044177","GO:0150051","GO:0005798","GO:0030139","GO:0000938","GO:0044161"]
+    peroxisome_list = ["GO:0005777","GO:0120149","GO:0019818"] #invalid go code : "GO:0019818" is other id for "peroxisome", raises KeyError
+    nucleus_list = ["GO:0005634","GO:0005635", "GO:0005636","GO:0005640","GO:0042175","GO:0042025","GO:0044383","GO:0000228","GO:0031981"]
+    # invalid go codes : "GO:0005635", "GO:0005636", both are "nuclear envelope" "GO:0033649" is "host cell nucleus", 
+    # "GO:0031981", is "nuclear lumen" all raise KeyError
+    secretory_pathway_list = ["GO:0005794","GO:0099503","GO:0030133","GO:0030138", "GO:0140045","GO:0030141","GO:0030137","GO:0030134",\
+                              "GO:0044177","GO:0150051","GO:0005798","GO:0030139","GO:0000938","GO:0044161"]
+    # invalid go codes : "GO:0030138", "GO:0140045", both other id for "COPII-coated ER to Golgi transport vesicle" all raise KeyError
     
+    KeyError_list = ["GO:0019818","GO:0005635","GO:0005636","GO:0033649","GO:0031981","GO:0030138", "GO:0140045"]
     loc_name = "no location class"
+    found = False
     
     if go_code in chloroplast_list:
         loc_name = "chloroplast"
-    super_list = get_super_locations(go_code,graph)
-    for code in chloroplast_list:
-        if id_to_name[code] in super_list:
-            loc_name = "chloroplast"
-            break
-    
-    if go_code in mitochondrion_list:
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in chloroplast_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "chloroplast"
+                        found = True
+                        break
+                
+    if go_code in mitochondrion_list and not found:
         loc_name = "mitochondrion"
-    super_list = get_super_locations(go_code,graph)
-    for code in mitochondrion_list:
-        if id_to_name[code] in super_list:
-            loc_name = "mitochondrion"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in mitochondrion_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "mitochondrion"
+                        found = True
+                        break
         
-    if go_code in endoplasmic_reticulum_list:
+    if go_code in endoplasmic_reticulum_list and not found:
         loc_name = "endoplasmic reticulum"
-    super_list = get_super_locations(go_code,graph)
-    for code in endoplasmic_reticulum_list:
-        if id_to_name[code] in super_list:
-            loc_name = "endoplasmic reticulum"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in endoplasmic_reticulum_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "endoplasmic reticulum"
+                        found = True
+                        break
         
-    if go_code in peroxisome_list:
+    if go_code in peroxisome_list and not found:
         loc_name = "peroxisome"
-    super_list = get_super_locations(go_code,graph)
-    for code in peroxisome_list:
-        if id_to_name[code] in super_list:
-            loc_name = "peroxisome"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in peroxisome_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "peroxisome"
+                        found = True
+                        break
         
-    if go_code in nucleus_list:
+    if go_code in nucleus_list and not found:
         loc_name = "nucleus"
-    super_list = get_super_locations(go_code,graph)
-    for code in nucleus_list:
-        if id_to_name[code] in super_list:
-            loc_name = "nucleus"
-            break
+        found = True
+    else:
+        if not found:
+            super_list = get_super_locations(go_code,graph)
+            for code in nucleus_list:
+                if code not in KeyError_list:
+                    if id_to_name[code] in super_list:
+                        loc_name = "nucleus"
+                        found = True
+                        break
         
-    if go_code in secretory_pathway_list:
+    if go_code in secretory_pathway_list and not found:
         loc_name = "secretory pathway"
-    for code in secretory_pathway_list:
-        super_list = get_super_locations(go_code,graph)
-        if id_to_name[code] in super_list:
-            loc_name = "secretory pathway"
-            break
-        
+        found = True
+    else:
+        if not found:
+            for code in secretory_pathway_list:
+                if code not in KeyError_list:
+                    super_list = get_super_locations(go_code,graph)
+                    if id_to_name[code] in super_list:
+                        loc_name = "secretory pathway"
+                        found = True
+                        break
     return loc_name 
   
 def process_loc_hit(loc,loc_count_dict):
@@ -400,9 +433,9 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
 def main():
     start_time = time.time()
     res_dict = json.load(open("res.json"))
-    #ns = "{http://uniprot.org/uniprot}"
-    ns = "{http://uniprot.org/uniref}"
-    '''
+    ns = "{http://uniprot.org/uniprot}"
+    #ns = "{http://uniprot.org/uniref}"
+    
     parse_file_name = res_dict.get("sprot_parse_file_name")
     count_out_file_name = res_dict.get("sprot_count_out_file_name")
     in_file_name = res_dict.get("sprot_in_file_name")
@@ -413,7 +446,7 @@ def main():
     count_out_file_name = res_dict.get("uniref50_count_out_file_name")
     in_file_name = res_dict.get("uniref50_in_file_name")
     out_file_name = res_dict.get("uniref50_out_file_name")
-    
+    '''
     print("start ontology load")
     graph = obonet.read_obo(res_dict.get("ontology_to_load"))
     print("ontology loaded")

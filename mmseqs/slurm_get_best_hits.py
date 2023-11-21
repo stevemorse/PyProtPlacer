@@ -5,8 +5,8 @@ import networkx
 import obonet
 from concurrent import futures
 import queue
-#from threading import Lock
 import os
+#import urllib
 
 class ThreadPoolExecutorWithQueueSizeLimit(futures.ThreadPoolExecutor):
     # class code from:
@@ -299,10 +299,8 @@ def is_keep_upper_case(location):
                             'COPI-coated vesicle']
     return location in keep_upper_case_list
         
-def get_locations(in_file_name,graph,ns):
-    #,loc_dict,lockremoved as params
-    print("file: " + in_file_name + " begins in get_locations")
-    key_error_log_file = open("/home/steve/Desktop/mmseq2/keyErrorLog.txt", 'a')
+def get_locations(in_file_name,graph,ns,res_dict):
+    key_error_log_file = open(res_dict.get("key_error_log_file"), 'a')
     key_error_log_file.write("\n")
     key_error_list = []
     local_dict = {}
@@ -387,9 +385,9 @@ def get_locations(in_file_name,graph,ns):
                                     key_error_log_file.flush()
                             if loc != "no location" and go_code not in key_error_list:
                                 super_class = get_location_class(go_code,graph)
-                            print(acc + " : " + go_code + " : " + " : " + loc + " : " + super_class)
+                            #print(acc + " : " + go_code + " : "  + loc + " : " + super_class)
                             local_dict.update({acc:(loc,super_class,go_code)})    
-                            print("local_dict size: " + str(len(local_dict)), flush = True)            
+                            # print("local_dict size: " + str(len(local_dict)), flush = True)            
             else:
                 print("error...schema not supported")
         # manual garbage collection
@@ -405,15 +403,6 @@ def get_locations(in_file_name,graph,ns):
     key_error_log_file.close()
     for key in key_error_list:
         print("failed key: " + key) 
-    '''         
-    print("local_dict size at end: " + len(local_dict), flush = True)
-    with lock:
-        print("lock aquired with lock id: " + id(lock))
-        #loc_dict |= local_dict
-        loc_dict.update(local_dict)
-    print("loc_dict size at end: " + len(loc_dict))
-    print("processed file: " + in_file_name) 
-    '''
     return local_dict
 
 def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):  
@@ -425,12 +414,11 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
     hits = 0
     if ns == "{http://uniprot.org/uniprot}":
         outfile.write("{:<60} {:<15} {:<15} {:<35} {:25} {:<10}".format("query","accession","evalue","location","super location","ecode"))
-        outfile.write("\n")
     elif ns == "{http://uniprot.org/uniref}":
         outfile.write("{:<60} {:<15} {:<15} {:<35} {:<25} {:<10}".format("query","accession","evalue","location","super location","go_code"))
-        outfile.write("\n")
     else:
         print('error...schema not supported')
+    outfile.flush()
     outfile.write("\n")
     for line in open(in_file_name, 'r'):
         line_number +=1
@@ -441,6 +429,8 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
             #tabs = re.findall(r'\S+', line)
             query = tabs[0]
             accession = tabs[1]
+            if "UniRef50_"  in accession:
+                accession = accession.replace("UniRef50_","").strip()
             evalue = str(tabs[2])
             #print(query,accession,evalue)
             if query == last_query:
@@ -455,11 +445,13 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
             superloc_count_dict = process_loc_hit(location[1],loc_count_dict)
             outfile.write("{:<60} {:<15} {:<15} {:<35} {:<25} {:<10}".format(query,accession,evalue,location[0],location [1],location[2]))
             outfile.write("\n")
+            outfile.flush()
     outfile.close()
     make_count_output(count_out_file_name,loc_count_dict,superloc_count_dict,hits) 
     
 def main():
     start_time = time.time()
+    #res_dict = json.load(open("/nfs/speed-scratch/ste_mors/venv/PyProtPlacer/res.json"))
     res_dict = json.load(open("/home/steve/eclipse-workspace/PyProtPlacer/res.json"))
     #ns = "{http://uniprot.org/uniprot}"
     ns = "{http://uniprot.org/uniref}"
@@ -476,25 +468,20 @@ def main():
     out_file_name = res_dict.get("uniref50_out_file_name")
     
     print("start ontology load")
+    #graph = obonet.read_obo(urllib.request.pathname2url(res_dict.get("ontology_to_load")))
     graph = obonet.read_obo(res_dict.get("ontology_to_load"))
     print("ontology loaded")
     dir_path = res_dict.get("uniref50_base_file_name")
-    #lock = Lock()
-    #global loc_dict
     loc_dict = {}
     total_files = count_files(dir_path)
     base_file_name = res_dict.get("uniref50_base_file_name")
-    #with ThreadPoolExecutorWithQueueSizeLimit() as executor:
-    #with futures.ThreadPoolExecutor() as executor:
-    with futures.ProcessPoolExecutor() as executor:
-    #parse_file_name =  base_file_name + "/slice_" + str(file_count) + ".xml"                                                                                                             #file_count in range(total_files)
-        results =  [executor.submit(get_locations,base_file_name + "/slice_" + str(file_count) + ".xml",graph,ns) for file_count in range(total_files)]
-        #print("future: " + str(file_count) + " created")
+    with futures.ProcessPoolExecutor() as executor:                                                                                                           #file_count in range(total_files)
+        results =  [executor.submit(get_locations,base_file_name + "/slice_" + str(file_count) + ".xml",graph,ns,res_dict) for file_count in range(total_files)]
         for results in futures.as_completed(results):
             result = results.result()
             loc_dict.update(result)
             print("loc_dict size: " + str(len(loc_dict)), flush = True) 
-    print("loc_dict size: " + str(len(loc_dict)), flush = True)
+    print("final loc_dict size: " + str(len(loc_dict)), flush = True)
     find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name)
     end_time = time.time()
     print("System terminates normally in: " + str(end_time - start_time) + "seconds\n")
