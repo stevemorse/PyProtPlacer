@@ -11,5 +11,9 @@
     "ontology_to_load" : "http://geneontology.org/ontology/go-basic.obo",
     "trans_dict_file_name" : "/home/steve/Desktop/mmseq2/trans_dict.txt",
     "uniref50_base_file_name" : "/home/steve/Desktop/mmseq2/slices",
-    "key_error_log_file" : "/home/steve/Desktop/mmseq2/keyErrorLog.txt"
+    "key_error_log_file" : "/home/steve/Desktop/mmseq2/keyErrorLog.txt",
+    "dir_name" : "/home/steve/Desktop/eggNOG/emapped/",
+    "prodigal_dir_name" : "/home/steve/Desktop/eggNOG/prodigal/",
+    "merged_file_name" : "/home/steve/Desktop/eggNOG/allFastaRes.tsv",
+    "prodigal_merged_file_name" : "/home/steve/Desktop/eggNOG/prodigal_allFastaRes.tsv"
 }
