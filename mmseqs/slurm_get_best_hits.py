@@ -413,9 +413,9 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
     superloc_count_dict = {}
     hits = 0
     if ns == "{http://uniprot.org/uniprot}":
-        outfile.write("{:<60} {:<15} {:<15} {:<35} {:25} {:<10}".format("query","accession","evalue","location","super location","ecode"))
+        outfile.write("{:<60} {:<15} {:<15} {:<80} {:25} {:<10}".format("query","accession","evalue","location","super location","ecode"))
     elif ns == "{http://uniprot.org/uniref}":
-        outfile.write("{:<60} {:<15} {:<15} {:<35} {:<25} {:<10}".format("query","accession","evalue","location","super location","go_code"))
+        outfile.write("{:<60} {:<15} {:<15} {:<80} {:<25} {:<10}".format("query","accession","evalue","location","super location","go_code"))
     else:
         print('error...schema not supported')
     outfile.flush()
@@ -443,7 +443,7 @@ def find_best_hits(in_file_name,out_file_name,loc_dict,ns,count_out_file_name):
             hits += 1
             loc_count_dict = process_loc_hit(location[0],loc_count_dict)
             superloc_count_dict = process_loc_hit(location[1],loc_count_dict)
-            outfile.write("{:<60} {:<15} {:<15} {:<35} {:<25} {:<10}".format(query,accession,evalue,location[0],location [1],location[2]))
+            outfile.write("{:<60} {:<15} {:<15} {:<80} {:<25} {:<10}".format(query,accession,evalue,location[0],location [1],location[2]))
             outfile.write("\n")
             outfile.flush()
     outfile.close()
@@ -461,8 +461,8 @@ def main():
     in_file_name = res_dict.get("sprot_in_file_name")
     out_file_name = res_dict.get("sprot_out_file_name")
     '''
-    #parse_file_name = res_dict.get("uniref50_parse_file_name")
-    #parse_file_name = res_dict.get("test_uniref50_parse_file_name")
+    parse_file_name = res_dict.get("uniref50_parse_file_name")
+    parse_file_name = res_dict.get("test_uniref50_parse_file_name")
     count_out_file_name = res_dict.get("uniref50_count_out_file_name")
     in_file_name = res_dict.get("uniref50_in_file_name")
     out_file_name = res_dict.get("uniref50_out_file_name")

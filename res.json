@@ -15,5 +15,7 @@
     "dir_name" : "/home/steve/Desktop/eggNOG/emapped/",
     "prodigal_dir_name" : "/home/steve/Desktop/eggNOG/prodigal/",
     "merged_file_name" : "/home/steve/Desktop/eggNOG/allFastaRes.tsv",
-    "prodigal_merged_file_name" : "/home/steve/Desktop/eggNOG/prodigal_allFastaRes.tsv"
+    "prodigal_merged_file_name" : "/home/steve/Desktop/eggNOG/prodigal_allFastaRes.tsv",
+    "sprot_seq_out_file_name" : "/home/steve/Desktop/deeploc2/sprot_seqs.fasta",
+    "uniref_seq_out_file_name" : "/home/steve/Desktop/deeploc2/uniref_seqs.fasta"
 }

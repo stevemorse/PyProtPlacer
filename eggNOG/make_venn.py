@@ -89,7 +89,7 @@ def make_venn_3(file_one,file_two,file_three):
 def main():
     start_time = time.time()
     #res_dict = json.load(open("/nfs/speed-scratch/ste_mors/venv/PyProtPlacer/res.json"))
-    res_dict = json.load(open("/home/steve/eclipse-workspace/PyProtPlacer/res.json"))
+    res_dict = json.load(open("/home/steve/PycharmProjects/PyProtPlacer/res.json"))
     file_one = res_dict.get("uniref50_in_file_name")
     file_two = res_dict.get("sprot_in_file_name")
     file_three = res_dict.get("merged_file_name")
@@ -99,7 +99,7 @@ def main():
     #make_venn_3(file_one,file_two,file_three)
     make_venn_3(file_one,file_two,file_four)
     end_time = time.time()
-    print("System terminates normally in: " + str(end_time - start_time) + "seconds\n")
+    print("System terminates normally in: " + str(end_time - start_time) + " seconds\n")
     
 if __name__ == "__main__":
     main()
